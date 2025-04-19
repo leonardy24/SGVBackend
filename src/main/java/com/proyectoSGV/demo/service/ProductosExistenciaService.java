@@ -3,7 +3,7 @@ package com.proyectoSGV.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.proyectoSGV.demo.main.ProductosExistencia;
+import com.proyectoSGV.demo.main.ProductosExistencias;
 import com.proyectoSGV.demo.repository.ProductoExistenciaRepository;
 
 @Service
@@ -15,16 +15,19 @@ public class ProductosExistenciaService {
 	
 	
 	
-	public ProductosExistencia buscarPorCodigo(int codigo) {
+	public ProductosExistencias buscarPorCodigo(int codigo) {
 		
 		
-		ProductosExistencia producto = productosEmp.findByCodigo(codigo);
+		ProductosExistencias producto = productosEmp.findByCodigo(codigo);
 		
 		
 		
 		return producto;
 		
 	}
+	
+	
+	
 	
 	
 	

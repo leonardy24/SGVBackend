@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyectoSGV.demo.main.ProductosExistencia;
+import com.proyectoSGV.demo.main.ProductosExistencias;
 import com.proyectoSGV.demo.main.ProductosVentas;
 import com.proyectoSGV.demo.main.Venta;
 import com.proyectoSGV.demo.service.ProductoVentasService;
@@ -31,7 +31,7 @@ public class LoginController {
 	private UsuariosService loginSeervice;
 
 	@Autowired
-	private ProductosExistenciaService productosService;
+	private ProductosExistenciaService productosExistService;
 
 	@Autowired
 	private ProductoVentasService productosVentasService;
@@ -95,6 +95,31 @@ public class LoginController {
 	public ResponseEntity<ProductosVentas> buscaddorProductos(@PathVariable  int codigo) {
 
 		ProductosVentas producto = productosVentasService.buscarPorCodigo(codigo);
+
+		try {
+			if (producto != null) {
+
+				// SI producto ES DISTINTO DE NULL, ENVIAMOS EL PRODUCTO
+				return ResponseEntity.ok(producto);
+
+			} else {
+
+				// ES NULL, NO LO ENCONTRO
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+			
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
+		}
+
+	}
+	
+	@GetMapping("/buscadorStock/{codigo}")
+	public ResponseEntity<ProductosExistencias> buscaddorProductosStock(@PathVariable  int codigo) {
+
+		ProductosExistencias producto = productosExistService.buscarPorCodigo(codigo);
 
 		try {
 			if (producto != null) {

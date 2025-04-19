@@ -8,8 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "productosexistencia")
-public class ProductosExistencia {
+@Table(name = "productosexistencias")
+public class ProductosExistencias {
 
 	@Id
 	@Column(name = "idproductos")
@@ -26,11 +26,16 @@ public class ProductosExistencia {
 	private String nomProducto;
 	
 	
-	@Column(name = "precio")
-	private double precio;
+	@Column(name = "preciocosto")
+	private double precioCosto;
 
+	@Column(name = "precioventa")
+	private double precioVenta;
 
-	public ProductosExistencia() {
+	
+	
+	
+	public ProductosExistencias() {
 		super();
 	}
 
@@ -75,23 +80,36 @@ public class ProductosExistencia {
 	}
 
 
-	public double getPrecio() {
-		return precio;
+	public double getPrecioCosto() {
+		return precioCosto;
 	}
 
 
-	public void setPrecio(double precio) {
-		this.precio = precio;
+	public void setPrecioCosto(double precioCosto) {
+		this.precioCosto = precioCosto;
+	}
+
+
+	public double getPrecioVenta() {
+		return precioVenta;
+	}
+
+
+	public void setPrecioVenta(double precioVenta) {
+		this.precioVenta = precioVenta;
 	}
 
 
 	@Override
 	public String toString() {
-		return "Productos [idProductos=" + idProductos + ", codigo=" + codigo + ", cantidad=" + cantidad
-				+ ", nomProducto=" + nomProducto + ", precio=" + precio + "]";
+		return "ProductosExistencias [idProductos=" + idProductos + ", codigo=" + codigo + ", cantidad=" + cantidad
+				+ ", nomProducto=" + nomProducto + ", precioCosto=" + precioCosto + ", precioVenta=" + precioVenta
+				+ "]";
 	}
+
+
 	
-	
+
 	
 	
 	
