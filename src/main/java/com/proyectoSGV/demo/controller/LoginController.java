@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ public class LoginController {
 
 	@Autowired
 	private ProductoVentasService productosVentasService;
-	
+
 	@Autowired
 	private VentasService ventasService;
 
@@ -44,7 +45,8 @@ public class LoginController {
 																						// parsear la informacion que le
 																						// llega en JSON al objecto
 																						// correspondiente
-																						// y espera la informa en el cuerpo de la consulta
+																						// y espera la informa en el
+																						// cuerpo de la consulta
 																						// no en la URL
 
 		try {
@@ -60,18 +62,17 @@ public class LoginController {
 		} catch (Exception e) {
 			System.out.println(e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			
+
 		}
 	}
-	
+
 	@PostMapping("/registroVenta")
-	public ResponseEntity<Venta> registrarVenta(@RequestBody Venta venta){
-		
+	public ResponseEntity<Venta> registrarVenta(@RequestBody Venta venta) {
+
 		try {
-			
+
 			System.out.println(venta);
-			
-			
+
 			boolean ventaResgistrada = ventasService.registrarVenta(venta);
 
 			if (ventaResgistrada) {
@@ -80,19 +81,70 @@ public class LoginController {
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			
+
+		}
+
+	}
+	
+	@PostMapping("/actualizarProducto")// creo que debo utilizar put o path
+	public ResponseEntity<ProductosExistencias> updateProExistencias(@RequestBody ProductosExistencias productoActualizado){
+		
+		
+		
+		boolean productoActu = productosExistService.actualizarProducto(productoActualizado);
+
+		try {
+			if (productoActu) {
+
+				// SI producto ES DISTINTO DE NULL, ENVIAMOS EL PRODUCTO
+				return new ResponseEntity<>(HttpStatus.OK);
+
+			} else {
+
+				// ES NULL, NO LO ENCONTRO EN LA BASE DE DATOS
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
 		}
 		
+	}
+	
+	@DeleteMapping("/productoEliminar/{id}")
+	public ResponseEntity<?> eliminarProducto(@PathVariable Integer id){
 		
+		boolean productoEliminado = productosExistService.eliminarProductoExistencia(id);
+	
+		try {
+			if (productoEliminado) {
+
+				// SI ME RETORNA TRUE, ES PORQUE EL PRODCUTO EXISTE Y SE ELIMINO CORRECTAMENTE
+				return new ResponseEntity<>(HttpStatus.OK);
+
+			} else {
+
+				//NO EXISTE EL PROCUTO O HUBO UN ERROR AL MOMENTO DE ELIMINAR
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
+		}
 		
 	}
+	
 
 	@GetMapping("/buscador/{codigo}")
-	public ResponseEntity<ProductosVentas> buscaddorProductos(@PathVariable  int codigo) {
+	public ResponseEntity<ProductosVentas> buscaddorProductos(@PathVariable int codigo) {
 
 		ProductosVentas producto = productosVentasService.buscarPorCodigo(codigo);
 
@@ -109,15 +161,15 @@ public class LoginController {
 			}
 
 		} catch (Exception e) {
-			
+
 			System.out.println(e);
 			return ResponseEntity.badRequest().build();
 		}
 
 	}
-	
+
 	@GetMapping("/buscadorStock/{codigo}")
-	public ResponseEntity<ProductosExistencias> buscaddorProductosStock(@PathVariable  int codigo) {
+	public ResponseEntity<ProductosExistencias> buscaddorProductosStock(@PathVariable int codigo) {
 
 		ProductosExistencias producto = productosExistService.buscarPorCodigo(codigo);
 
@@ -134,7 +186,7 @@ public class LoginController {
 			}
 
 		} catch (Exception e) {
-			
+
 			System.out.println(e);
 			return ResponseEntity.badRequest().build();
 		}
