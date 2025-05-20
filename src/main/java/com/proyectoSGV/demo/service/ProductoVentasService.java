@@ -13,7 +13,7 @@ public class ProductoVentasService {
 	@Autowired
 	public ProductoVentaRepository productoVentas;
 
-	public ProductosVentas buscarPorCodigo(int codigo) {
+	public ProductosVentas buscarPorCodigo(long codigo) {
 
 		ProductosVentas productoV = productoVentas.findByCodigo(codigo);
 

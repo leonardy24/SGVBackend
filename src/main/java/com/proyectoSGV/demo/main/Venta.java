@@ -1,5 +1,6 @@
 package com.proyectoSGV.demo.main;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -8,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -30,7 +33,30 @@ public class Venta {
 	private double iva;
 
 	@OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
-	private List<Productos> productos;
+	private List<DetallesVentas> productos;
+
+	@ManyToOne
+	@JoinColumn(name = "id_usuario")
+	private Usuarios usuario;
+
+	@Column(name = "fecha_venta")
+	private LocalDateTime fecha;
+
+	public LocalDateTime getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
+	}
+
+	public Usuarios getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuarios usuario) {
+		this.usuario = usuario;
+	}
 
 	public int getId() {
 		return id;
@@ -64,21 +90,23 @@ public class Venta {
 		this.iva = iva;
 	}
 
-	public List<Productos> getProductos() {
+	public List<DetallesVentas> getProductos() {
 		return productos;
 	}
 
-	public void setProductos(List<Productos> productos) {
+	public void setProductos(List<DetallesVentas> productos) {
 		this.productos = productos;
-		for (Productos p : productos) {
-	        p.setVenta(this); // ✅ se asegura la relación
-	    }
+		for (DetallesVentas p : productos) {
+			p.setVenta(this); // ✅ se asegura la relación
+		}
 	}
 
 	@Override
 	public String toString() {
-		return "Venta [metodoPago=" + metodoPago + ", totalVenta=" + totalVenta + ", iva=" + iva + ", productos="
-				+ productos + "]";
+		return "Venta [id=" + id + ", metodoPago=" + metodoPago + ", totalVenta=" + totalVenta + ", iva=" + iva
+				+ ", productos=" + productos + ", usuario=" + usuario + ", fecha=" + fecha + "]";
 	}
+
+	
 
 }

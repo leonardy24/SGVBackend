@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import com.proyectoSGV.demo.controller.LoginController;
 import com.proyectoSGV.demo.repository.UsuarioRepository;
 import com.proyectoSGV.demo.service.ProductoVentasService;
 import com.proyectoSGV.demo.service.ProductosExistenciaService;
@@ -23,7 +24,11 @@ public class ProyectoSgvApplication {
 		//System.out.println(empUsuarios.usuariosEmp.findById(1).get().getUsuario());
 		
 		//System.out.println(empProducto.productosEmp.findById(1));
-		System.out.println(empProductoV.buscarPorCodigo(123456));
+		//System.out.println(empProductoV.buscarPorCodigo(123456));
+		
+		//LoginController login = new LoginController();
+		
+		//login.CrearReporteProductoExistentes(0);
 	}
 
 }

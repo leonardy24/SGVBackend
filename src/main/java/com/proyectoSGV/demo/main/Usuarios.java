@@ -1,10 +1,16 @@
 package com.proyectoSGV.demo.main;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,14 +22,27 @@ public class Usuarios {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "usuario")
-	private String usuario;
+	@Column(name = "username")
+	private String username;
 
-	@Column(name = "contrasena")
-	private String contrasena;
+	@Column(name = "password")
+	private String password;
 
-	@Column(name = "admin")
-	private boolean admin;
+	@ManyToOne
+	@JoinColumn(name = "id_rol")
+	private Role role;
+
+	
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+	private List<Venta> ventas;
+
+	public List<Venta> getVentas() {
+		return ventas;
+	}
+
+	public void setVentas(List<Venta> ventas) {
+		this.ventas = ventas;
+	}
 
 	public Usuarios() {
 		super();
@@ -37,30 +56,33 @@ public class Usuarios {
 		this.id = id;
 	}
 
-	public String getUsuario() {
-		return usuario;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getContrasena() {
-		return contrasena;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setContrasena(String contrasena) {
-		this.contrasena = contrasena;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public boolean isAdmin() {
-		return admin;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setAdmin(boolean admin) {
-		this.admin = admin;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Usuarios [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + "]";
+	}
 
 }

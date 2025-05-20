@@ -10,8 +10,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "productos")
-public class Productos {
+@Table(name = "detallesventas")
+public class DetallesVentas {
 
 	@Id
 	@Column(name = "id")
@@ -19,7 +19,7 @@ public class Productos {
 	private int id;
 
 	@Column(name = "codigo")
-	private int codigo;
+	private long codigo;
 
 	@Column(name = "nomproducto")
 	private String nomProducto;
@@ -35,11 +35,11 @@ public class Productos {
     @JoinColumn(name = "idventas")
     private Venta venta;
 
-	public Productos() {
+	public DetallesVentas() {
 
 	}
 
-	public Productos(int codigo, String nomProducto, int cantidad, double precio) {
+	public DetallesVentas(int codigo, String nomProducto, int cantidad, double precio) {
 		super();
 		this.codigo = codigo;
 		this.nomProducto = nomProducto;
@@ -47,11 +47,13 @@ public class Productos {
 		this.precio = precio;
 	}
 
-	public int getCodigo() {
+	
+
+	public long getCodigo() {
 		return codigo;
 	}
 
-	public void setCodigo(int codigo) {
+	public void setCodigo(long codigo) {
 		this.codigo = codigo;
 	}
 

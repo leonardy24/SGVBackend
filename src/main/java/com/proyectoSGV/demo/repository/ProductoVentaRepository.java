@@ -10,7 +10,7 @@ import com.proyectoSGV.demo.main.ProductosVentas;
 public interface ProductoVentaRepository extends JpaRepository<ProductosVentas,Integer>{
 
 	
-	ProductosVentas findByCodigo(int codigo);
+	ProductosVentas findByCodigo(long codigo);
 	
 	
 	

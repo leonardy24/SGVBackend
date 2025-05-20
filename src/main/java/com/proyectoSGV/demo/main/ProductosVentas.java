@@ -11,80 +11,66 @@ import jakarta.persistence.Table;
 @Table(name = "productosventas")
 public class ProductosVentas {
 
-	
 	@Id
 	@Column(name = "idproducto")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idProductos;
-	
+
 	@Column(name = "codigo")
-	private int codigo;
-	
+	private long codigo;
+
 	@Column(name = "cantidad")
 	private int cantidad;
-	
+
 	@Column(name = "nombreproducto")
 	private String nomProducto;
-	
-	
+
 	@Column(name = "precio")
 	private double precio;
-	
-	
-	public ProductosVentas() {
-		
-	}
 
+	public ProductosVentas() {
+
+	}
 
 	public int getIdProductos() {
 		return idProductos;
 	}
 
-
 	public void setIdProductos(int idProductos) {
 		this.idProductos = idProductos;
 	}
 
-
-	public int getCodigo() {
+	public long getCodigo() {
 		return codigo;
 	}
 
-
-	public void setCodigo(int codigo) {
+	public void setCodigo(long codigo) {
 		this.codigo = codigo;
 	}
-
 
 	public int getCantidad() {
 		return cantidad;
 	}
 
-
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
-
 
 	public String getNomProducto() {
 		return nomProducto;
 	}
 
-
 	public void setNomProducto(String nomProducto) {
 		this.nomProducto = nomProducto;
 	}
-
 
 	public double getPrecio() {
 		return precio;
 	}
 
-
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
-
 
 	@Override
 	public String toString() {
@@ -92,7 +78,4 @@ public class ProductosVentas {
 				+ ", nomProducto=" + nomProducto + ", precio=" + precio + "]";
 	}
 
-	
-	
-	
 }
