@@ -106,26 +106,7 @@ public class ProductosExistenciaService {
 	*/
 	
 	
-	public void generarInforme(List<ProductosExistencias> datos, ByteArrayOutputStream outputStream) throws JRException {
-		String ficheroJasper = "repost\\Invoice.jasper";
-
-	    JRBeanCollectionDataSource camposInforme = new JRBeanCollectionDataSource(datos);
-
-	    // Compilamos plantilla
-	   // InputStream jasperStream = getClass().getResourceAsStream(ficheroJasper);
-	    
-	    
-	    //JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
-	    JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(ficheroJasper);
-	    
-	    
-	    
-	    // Rellenamos informe
-	    JasperPrint informe = JasperFillManager.fillReport(jasperReport, null, camposInforme);
-
-	    // Exportamos a PDF y escribimos el contenido en el OutputStream
-	    JasperExportManager.exportReportToPdfStream(informe, outputStream);
-	}
+	
 	
 
 }

@@ -30,10 +30,21 @@ import com.proyectoSGV.demo.main.ProductosVentas;
 import com.proyectoSGV.demo.main.Usuarios;
 import com.proyectoSGV.demo.main.Venta;
 import com.proyectoSGV.demo.main.VentaDTO;
+import com.proyectoSGV.demo.service.DetallesVentasService;
 import com.proyectoSGV.demo.service.ProductoVentasService;
 import com.proyectoSGV.demo.service.ProductosExistenciaService;
 import com.proyectoSGV.demo.service.UsuariosService;
 import com.proyectoSGV.demo.service.VentasService;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+
+import com.proyectoSGV.demo.main.DetallesVentas;
 
 @RequestMapping("/auth")
 //@CrossOrigin(origins = "http://localhost:4200")
@@ -52,6 +63,9 @@ public class LoginController {
 	@Autowired
 	private VentasService ventasService;
 
+	@Autowired
+	private DetallesVentasService detallesVentasService;
+	
 	private String userName;
 
 	/*
@@ -298,9 +312,7 @@ public class LoginController {
 				return ResponseEntity.ok(ventasDTO);
 
 			} else {
-				for (VentaDTO venta : ventasDTO) {
-					System.out.println(venta);
-				}
+				
 				// ES NULL, NO LO ENCONTRO
 				return ResponseEntity.notFound().build();
 			}
@@ -362,22 +374,17 @@ public class LoginController {
 	 * }
 	 */
 
-	@GetMapping("/generarPDF/{codigo}")
+	@GetMapping("/generarPDFProductos/{codigo}")
 	public ResponseEntity<byte[]> CrearReporteProductoExistentes(@PathVariable long codigo) {
 		List<ProductosExistencias> productosExistentes = productosExistService.productosExistencias();
 
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		try {
 			if (productosExistentes != null) {
 				// Genera el reporte y lo exporta a un archivo PDF en memoria (sin necesidad de
 				// guardarlo en disco)
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				productosExistService.generarInforme(productosExistentes, outputStream);
+				generarInforme(productosExistentes, outputStream,"repost\\Invoice.jasper");
 
 				// Configura la respuesta para que el navegador lo descargue como un archivo
 				HttpHeaders headers = new HttpHeaders();
@@ -392,6 +399,61 @@ public class LoginController {
 			System.out.println(e);
 			return ResponseEntity.badRequest().build();
 		}
+	}
+	
+	@GetMapping("/generarPDFVenta/{codigoVenta}")
+	public ResponseEntity<byte[]> CrearReporteVentasExistentes(@PathVariable int codigoVenta) {
+		//List<ProductosExistencias> productosExistentes = productosExistService.productosExistencias();
+
+		List<DetallesVentas> detalleVenta = detallesVentasService.ventas(codigoVenta);
+		
+		for (DetallesVentas detallesVentas : detalleVenta) {
+			
+			System.out.println(detallesVentas);
+		}
+		
+		try {
+			if (detalleVenta != null) {
+				// Genera el reporte y lo exporta a un archivo PDF en memoria (sin necesidad de
+				// guardarlo en disco)
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				generarInforme(detalleVenta, outputStream,"repost\\DetalleVentas.jasper");
+
+				// Configura la respuesta para que el navegador lo descargue como un archivo
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_PDF);
+				headers.setContentDisposition(ContentDisposition.attachment().filename("listadoVentas.pdf").build());
+				return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
+			} else {
+				// Es NULL, no lo encontró
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
+		}
+	}
+	
+	//UTILIZO ESTE METODO PARA GENERAR EL INFORME, POR PARAMETRO RECIBE LA LISTA DE DATOS Y EL NOMBRE DE ARCHIVO JASPER
+	public void generarInforme(List<?> datos, ByteArrayOutputStream outputStream,String nomFicheroJasper) throws JRException {
+		String ficheroJasper = nomFicheroJasper;
+
+	    JRBeanCollectionDataSource camposInforme = new JRBeanCollectionDataSource(datos);
+
+	    // Compilamos plantilla
+	   // InputStream jasperStream = getClass().getResourceAsStream(ficheroJasper);
+	    
+	    
+	    //JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
+	    JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(ficheroJasper);
+	    
+	    
+	    
+	    // Rellenamos informe
+	    JasperPrint informe = JasperFillManager.fillReport(jasperReport, null, camposInforme);
+
+	    // Exportamos a PDF y escribimos el contenido en el OutputStream
+	    JasperExportManager.exportReportToPdfStream(informe, outputStream);
 	}
 
 }
