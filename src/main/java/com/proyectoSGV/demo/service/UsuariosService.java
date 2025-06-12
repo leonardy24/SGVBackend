@@ -1,33 +1,44 @@
 package com.proyectoSGV.demo.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-
+import com.proyectoSGV.demo.ProyectoSgvApplication;
+import com.proyectoSGV.demo.main.Role;
+import com.proyectoSGV.demo.main.UsuDTO;
 import com.proyectoSGV.demo.main.Usuarios;
 import com.proyectoSGV.demo.repository.UsuarioRepository;
 
 @Service
 public class UsuariosService {
 
+    private final ProyectoSgvApplication proyectoSgvApplication;
+
 	@Autowired
 	public UsuarioRepository usuariosEmp;//lo dejo publico para pruebas
 	
 	 @Autowired
 	 private PasswordEncoder passwordEncoder;
+
+
+    UsuariosService(ProyectoSgvApplication proyectoSgvApplication) {
+        this.proyectoSgvApplication = proyectoSgvApplication;
+    }
 	 
 	 
-	public boolean usuExiste(String usuario, String pass) {
+	public Usuarios usuExiste(String usuario) {
 		
-		if(usuario.equals("leo") && pass.equals("123")) {
-			return true;
+		Usuarios usu = usuariosEmp.findByUsername(usuario);
+		if(usu!=null) {
+			return usu;
 		}
 		
-		return false;
+		return null;
 	}
 	
-	public void saveUser(Usuarios user) {
+	public Usuarios saveUser(Usuarios user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         
@@ -36,7 +47,7 @@ public class UsuariosService {
       //  user.getRoles().add(userRole);
         
        
-        usuariosEmp.save(user);
+        return usuariosEmp.save(user);
         
     }
 	
@@ -49,6 +60,39 @@ public class UsuariosService {
 	        if (user == null) return false;
 	        return passwordEncoder.matches(password, user.getPassword());
 	    }
+
+	public boolean actualizarUsuario(UsuDTO usuarioActualizado) {
+		
+		Optional<Usuarios> usuarioOptional = usuariosEmp.findById(usuarioActualizado.getId());
+		Role rol = new Role();
+		
+		
+		
+		if(usuarioOptional.isPresent()) {
+			
+			if(usuarioActualizado.getRol().equals("ADMIN")) {
+				rol.setId(2);
+				rol.setName("ADMIN");
+				
+			}else {
+				rol.setId(1);
+				rol.setName("USER");
+				
+			}
+			
+			
+			Usuarios usuario = usuarioOptional.get();
+			
+			//usuario.setUsername(usuarioActualizado.getNombre());
+			usuario.setRole(rol);
+			
+			System.out.println(usuario.getRole());
+			usuariosEmp.save(usuario);
+			
+			return true;
+		}
+		return false;
+	}
 	
 	
 }

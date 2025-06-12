@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.proyectoSGV.demo.main.ProductosExistencias;
 import com.proyectoSGV.demo.main.ProductosVentas;
+import com.proyectoSGV.demo.main.Role;
+import com.proyectoSGV.demo.main.UsuDTO;
+import com.proyectoSGV.demo.main.UsuarioNuevo;
 import com.proyectoSGV.demo.main.Usuarios;
 import com.proyectoSGV.demo.main.Venta;
 import com.proyectoSGV.demo.main.VentaDTO;
@@ -142,11 +146,46 @@ public class LoginController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(@RequestBody Usuarios user) {
-
-		System.out.println(user);
-		userService.saveUser(user);
-		return ResponseEntity.ok("User registered successfully");
+	public ResponseEntity<?> registerUser(@RequestBody UsuarioNuevo userNuevo) {
+		
+		try {
+		
+			
+			Role rol = new Role();
+			
+			if(userNuevo.getRol().equals("ADMIN")) {
+				rol.setId(2);
+				rol.setName("ADMIN");
+				
+			}else {
+				rol.setId(1);
+				rol.setName("USER");
+				
+			}
+			
+			
+			Usuarios usuNuevo = new Usuarios();
+			usuNuevo.setUsername(userNuevo.getUsername());
+			usuNuevo.setPassword(userNuevo.getPassword());
+			usuNuevo.setRole(rol);
+			
+			
+		Usuarios usu = userService.saveUser(usuNuevo);
+		
+		
+			if(usu != null) {
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		
 	}
 
 	@PostMapping("/registroVenta")
@@ -185,8 +224,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/actualizarProducto") // creo que debo utilizar put o path
-	public ResponseEntity<ProductosExistencias> updateProExistencias(
-			@RequestBody ProductosExistencias productoActualizado) {
+	public ResponseEntity<ProductosExistencias> updateProExistencias(@RequestBody ProductosExistencias productoActualizado) {
 
 		boolean productoActu = productosExistService.actualizarProducto(productoActualizado);
 
@@ -234,6 +272,32 @@ public class LoginController {
 		}
 
 	}
+	
+	
+	@PutMapping("/actualizarUsuario/{id}")
+	public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody UsuDTO usuarioActualizado){
+		
+		boolean usuActualizado = userService.actualizarUsuario(usuarioActualizado);
+		
+		try {
+			if (usuActualizado) {
+
+				// SI ME RETORNA TRUE, ES PORQUE EL USUARIO SE ACTUALIZO
+				return new ResponseEntity<>(HttpStatus.OK);
+
+			} else {
+
+				// NO EXISTE EL PROCUTO O HUBO UN ERROR AL MOMENTO DE ELIMINAR
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
+		}
+		
+	}
 
 	@DeleteMapping("/productoEliminar/{id}")
 	public ResponseEntity<?> eliminarProducto(@PathVariable Integer id) {
@@ -259,7 +323,36 @@ public class LoginController {
 		}
 
 	}
+	
+	@GetMapping("/buscadorusuario/{nomUsuario}") 
+	public ResponseEntity<UsuDTO> buscadorUsuario(@PathVariable String nomUsuario) {
+		//System.out.println(codigo);
+		
+		
+		
+		try {
+			
+			Usuarios usu = userService.usuExiste(nomUsuario);
+			if (usu!= null) {
+				System.out.println("existe");
+				// SI producto ES DISTINTO DE NULL, ENVIAMOS EL PRODUCTO
+				UsuDTO usuReturn = new UsuDTO(usu.getId(),usu.getUsername(),usu.getRole().getName());
+				return ResponseEntity.ok(usuReturn);
 
+			} else {
+
+				// ES NULL, NO LO ENCONTRO
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+
+			System.out.println(e);
+			return ResponseEntity.badRequest().build();
+		}
+
+	}
+	
 	@GetMapping("/buscador/{codigo}") // CREO QUE NO ES NECESARIO CAPTURAR EL EL HEADER DE
 	public ResponseEntity<ProductosVentas> buscaddorProductos(@PathVariable long codigo) {
 		System.out.println(codigo);

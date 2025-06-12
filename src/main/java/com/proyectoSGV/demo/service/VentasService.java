@@ -28,8 +28,7 @@ public class VentasService {
 
 	public boolean registrarVenta(Venta venta, String userName) {
 
-		// TENGO EL PROBLEMA QUE CUANDO GUARDO UNA VENTA Y GUARDO LOS PRODUCTOS,
-		// EN PRODUCTOS NO ME ESTA ASINGNANDO EL ID CORRESPONDINETE A SU VENTA
+		
 
 		venta.setProductos(venta.getProductos());
 		venta.setFecha(LocalDateTime.now());
