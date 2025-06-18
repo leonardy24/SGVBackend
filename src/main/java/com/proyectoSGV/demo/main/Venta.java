@@ -98,6 +98,7 @@ public class Venta {
 		this.productos = productos;
 		for (DetallesVentas p : productos) {
 			p.setVenta(this); // ✅ se asegura la relación
+			
 		}
 	}
 

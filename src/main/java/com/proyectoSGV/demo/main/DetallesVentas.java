@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,6 +35,11 @@ public class DetallesVentas {
     @ManyToOne
     @JoinColumn(name = "idventas")
     private Venta venta;
+    
+    @ManyToOne
+    @JoinColumn(name="idproducto")
+    private ProductosVentas produVentas;
+    
 
 	public DetallesVentas() {
 
@@ -46,8 +52,17 @@ public class DetallesVentas {
 		this.cantidad = cantidad;
 		this.precio = precio;
 	}
-
 	
+	
+	
+
+	public ProductosVentas getProduVentas() {
+		return produVentas;
+	}
+
+	public void setProduVentas(ProductosVentas produVentas) {
+		this.produVentas = produVentas;
+	}
 
 	public long getCodigo() {
 		return codigo;

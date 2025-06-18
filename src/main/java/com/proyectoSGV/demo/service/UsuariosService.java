@@ -55,10 +55,12 @@ public class UsuariosService {
 	        return usuariosEmp.findByUsername(username);
 	    }
 	    
-	 public boolean authenticate(String username, String password) {
+	 public Usuarios authenticate(String username, String password) {
 	    	Usuarios user = usuariosEmp.findByUsername(username);
-	        if (user == null) return false;
-	        return passwordEncoder.matches(password, user.getPassword());
+	        if (user == null) return null; // CAMBIENLO DE RETORNA BOOLEAN 
+	        
+	        if(!passwordEncoder.matches(password, user.getPassword())) return null;
+	        return user;
 	    }
 
 	public boolean actualizarUsuario(UsuDTO usuarioActualizado) {

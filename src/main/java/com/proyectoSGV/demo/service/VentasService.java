@@ -33,7 +33,7 @@ public class VentasService {
 		venta.setProductos(venta.getProductos());
 		venta.setFecha(LocalDateTime.now());
 		venta.setUsuario(userRepo.findByUsername(userName));
-
+		System.out.println("usuario"+venta.getUsuario());
 		Venta nVenta = ventas.save(venta);
 
 		if (nVenta != null) {

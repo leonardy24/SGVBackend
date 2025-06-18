@@ -1,6 +1,7 @@
 package com.proyectoSGV.demo.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class LoginController {
 	 * } return ResponseEntity.status(401).body("Credenciales inválidas"); }
 	 */
 
-	public ResponseEntity<String> autorizacion(String authorizationHeader) {
+	public ResponseEntity<UsuDTO> autorizacion(String authorizationHeader) {
 
 		// El encabezado de autorización debería tener el formato "Basic
 		// base64UsernamePassword"
@@ -122,10 +123,12 @@ public class LoginController {
 					System.out.println("Password: " + password);
 
 					// Autenticar al usuario
-					boolean valid = userService.authenticate(username, password);
-					if (valid) {
+					Usuarios valid = userService.authenticate(username, password);
+					if (valid != null) {
 						this.userName = username;
-						return new ResponseEntity<>(HttpStatus.OK);
+						
+						UsuDTO usu = new UsuDTO(valid.getId(),valid.getUsername(), valid.getRole().getName());
+						return new ResponseEntity<>(usu,HttpStatus.OK);
 					}
 				}
 			}
@@ -137,9 +140,9 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> loginUser(@RequestHeader("Authorization") String authorizationHeader) {
+	public ResponseEntity<UsuDTO> loginUser(@RequestHeader("Authorization") String authorizationHeader) {
 
-		ResponseEntity<String> respuesta = autorizacion(authorizationHeader);
+		ResponseEntity<UsuDTO> respuesta = autorizacion(authorizationHeader);
 
 		return respuesta;
 
@@ -197,13 +200,13 @@ public class LoginController {
 
 			List<DetallesVentas> detallesVenta = venta.getProductos();
 			boolean ventaResgistrada = ventasService.registrarVenta(venta, this.userName);
-
+			System.out.println(this.userName);
 			
 
 			if (ventaResgistrada) {
 
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				generarInforme(detallesVenta, outputStream, "repost\\Factura.jasper");
+				generarInforme(detallesVenta, outputStream, "repost/Factura.jasper");
 
 				// Configura la respuesta para que el navegador lo descargue como un archivo
 				HttpHeaders headers = new HttpHeaders();
@@ -389,9 +392,12 @@ public class LoginController {
 		LocalDateTime fechaFinTime = fechaFin.atStartOfDay();
 
 		List<Venta> ventas = ventasService.findByFechaBetween(fechaIniTime, fechaFinTime);
+		
+		
 
 		List<VentaDTO> ventasDTO = new ArrayList<>();
 		for (Venta venta : ventas) {
+			System.out.println(venta);
 			VentaDTO dto = new VentaDTO();
 			dto.setIdVenta(venta.getId());
 			dto.setMetodoPago(venta.getMetodoPago());
@@ -483,7 +489,7 @@ public class LoginController {
 				// Genera el reporte y lo exporta a un archivo PDF en memoria (sin necesidad de
 				// guardarlo en disco)
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				generarInforme(productosExistentes, outputStream, "repost\\Invoice.jasper");
+				generarInforme(productosExistentes, outputStream, "repost/genPDFExisProduct.jasper");
 
 				// Configura la respuesta para que el navegador lo descargue como un archivo
 				HttpHeaders headers = new HttpHeaders();
@@ -517,7 +523,7 @@ public class LoginController {
 				// Genera el reporte y lo exporta a un archivo PDF en memoria (sin necesidad de
 				// guardarlo en disco)
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				generarInforme(detalleVenta, outputStream, "repost\\DetalleVentas.jasper");
+				generarInforme(detalleVenta, outputStream, "repost/DetalleVentas.jasper");
 
 				// Configura la respuesta para que el navegador lo descargue como un archivo
 				HttpHeaders headers = new HttpHeaders();
@@ -538,15 +544,16 @@ public class LoginController {
 	// DATOS Y EL NOMBRE DE ARCHIVO JASPER
 	public void generarInforme(List<?> datos, ByteArrayOutputStream outputStream, String nomFicheroJasper)
 			throws JRException {
-		String ficheroJasper = nomFicheroJasper;
+		
+		//String ficheroJasper ="/"+ nomFicheroJasper;
 
 		JRBeanCollectionDataSource camposInforme = new JRBeanCollectionDataSource(datos);
 
 		// Compilamos plantilla
-		// InputStream jasperStream = getClass().getResourceAsStream(ficheroJasper);
+		InputStream jasperStream = getClass().getResourceAsStream("/"+nomFicheroJasper);
 
-		// JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
-		JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(ficheroJasper);
+		 JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
+		//JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(ficheroJasper);
 
 		// Rellenamos informe
 		JasperPrint informe = JasperFillManager.fillReport(jasperReport, null, camposInforme);
